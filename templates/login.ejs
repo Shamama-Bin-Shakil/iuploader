@@ -1,0 +1,158 @@
+<!-- Include Header File -->
+<%- include("./partials/header.ejs") %>
+
+<!-- Login / Register Container -->
+<div class="container">
+  <div class="auth">
+    <div class="auth-content" id="auth-content">
+      <!-- Login Slider Start Here -->
+      <div class="login">
+        <form class="login-sideBy login-left" id="user_login">
+          <h3 class="login-heading">Member Login</h3>
+
+          <div class="form-control">
+            <input type="email" name="email" required />
+            <label for="email" class="label-name">
+              <span class="content-name">Email</span>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <input type="password" name="password" required />
+            <label for="password" class="label-name">
+              <span class="content-name">Password</span>
+            </label>
+          </div>
+
+          <div>
+            <button type="submit" class="primary-btn">Login</button>
+          </div>
+
+          <a href="#" class="link-color">Forgotten Password?</a>
+        </form>
+        <div class="login-sideBy login-right">
+          <h3 class="login-right-heading">
+            You Have No Account Please Register
+          </h3>
+          <button type="button" id="register-btn" class="style-btn">
+            Create New Account
+          </button>
+        </div>
+      </div>
+
+      <!-- Register Slider Start Here -->
+      <div class="register">
+        <div class="login-sideBy login-right">
+          <h3 class="login-right-heading">You Have Already Account</h3>
+          <button type="button" id="login-btn" class="style-btn">
+            Login Now
+          </button>
+        </div>
+        <form class="login-sideBy login-left" id="user_register" required>
+          <h3 class="login-heading">Create Account</h3>
+
+          <div class="form-control">
+            <input type="text" name="name" required />
+            <label for="name" class="label-name">
+              <span class="content-name">Name</span>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <input type="text" name="acc_email" required />
+            <label for="email" class="label-name">
+              <span class="content-name">Email</span>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <input type="password" name="acc_password" required />
+            <label for="password" class="label-name">
+              <span class="content-name">Password</span>
+            </label>
+          </div>
+
+          <div>
+            <button type="submit" class="primary-btn">Register</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Include Footer File -->
+<%- include("./partials/footer.ejs") %>
+
+  <!-- Register Script Start Here -->
+  <script>
+    const user_register = document.getElementById("user_register");
+    user_register.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const plainRegisterData = Object.fromEntries(formData.entries());
+
+      // Alert Error / Success
+
+      if (plainRegisterData.name.value === "") {
+        alertError("Name field is required");
+      } else if (plainRegisterData.acc_email.value === "") {
+        alertError("Email field is required");
+      } else if (plainRegisterData.acc_password.value === "") {
+        alertError("Password field is required");
+      } else if (plainRegisterData.acc_password.length <= 6) {
+        alertError("Password must be greater than 6 character");
+      } else {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(plainRegisterData),
+        });
+        const result = await response.json();
+        if (result.error == "Email is already exist") {
+          alertError("Email is already exist");
+        } else if (result.success == "Register Successfully") {
+          alertSuccess("Register Successfully");
+        } else if (result.success == "Register not Successfully") {
+          alertError("Register not Successfully");
+        }
+      }
+    });
+  </script>
+
+  <!-- Login Script Start Here -->
+  <script>
+    const user_login = document.getElementById("user_login");
+    user_login.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const plainLoginData = Object.fromEntries(formData.entries());
+
+      if (plainLoginData.email.value === "") {
+        alertError("Email field is required");
+      } else if (plainLoginData.password.value === "") {
+        alertError("Email field is required");
+      } else {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(plainLoginData),
+        });
+        const result = await response.json();
+
+        if (result.error == "Invalid Credential") {
+          alertError("Invalid Credential");
+        } else {
+          if (result.token) {
+            alertSuccess("Login now");
+            setTimeout(() => {
+              sessionStorage.setItem("auth-token", result.token);
+              location.href = "/";
+            }, 2000);
+          }
+        }
+      }
+    });
+  </script>

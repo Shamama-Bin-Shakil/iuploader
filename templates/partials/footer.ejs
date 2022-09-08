@@ -1,0 +1,46 @@
+
+<!-- Footer Section -->
+<div class="footer">
+    <div>&copy; Copy Right 2022 <strong>iUploader.com</strong></div>
+    <div><strong>Developer By: </strong> Shamama-Bin-Shakil</div>
+</div>
+
+</body>
+<!-- Ionicon Package Link -->
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<!-- Custom js File -->
+<script src="js/main.js"></script>
+
+<!-- Login Slider -->
+<script>
+    try {
+        const register_btn = document.getElementById("register-btn");
+        register_btn.addEventListener("click", () => {
+            const auth_content = document.getElementById("auth-content");
+            auth_content.classList.add("active");
+        });
+        const login_btn = document.getElementById("login-btn");
+        login_btn.addEventListener("click", () => {
+            const auth_content = document.getElementById("auth-content");
+            auth_content.classList.remove("active");
+        });
+    } catch (error) {
+
+    }
+</script>
+
+<!-- Register Slider -->
+<script>
+    try {
+        const profile_button = document.getElementById("profile-button");
+        profile_button.addEventListener('click', () => {
+            const profile_content = document.getElementById("profile-content");
+            profile_content.classList.toggle("profile-active");
+        })
+    } catch (error) {
+
+    }
+</script>
+
+</html>

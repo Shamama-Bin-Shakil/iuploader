@@ -1,0 +1,94 @@
+<!-- Include Header File -->
+<%- include("./partials/header.ejs") %>
+
+
+    <!-- Header -->
+    <header>
+        <main class="header">
+            <div class="left-side">
+                <form action="#" class="search-image">
+                    <input type="text" placeholder="Products Search Image...">
+                    <button type="button" class="hero-search-btn">Search</button>
+                </form>
+                <h1>10M+ Beautiful Wallpaper in iUploader.com</h1>
+            </div>
+            </div>
+        </main>
+    </header>
+
+
+    <!-- /*/////////////////////////////////////////////////////////////////////////////////
+    ///// FirstSection Section Start
+    /////////////////////////////////////////////////////////////////////////////////*/ -->
+
+    <section class="main-FirstSection" id="course">
+        <main class="FirstSection">
+            <div class="title">
+                <p><strong> Popular Image</strong></p>
+            </div>
+            <div class="course-control course-control-cardImage" id="imageBodyParent"></div>
+        </main>
+    </section>
+
+    <!-- Include Footer File -->
+    <%- include("./partials/footer.ejs") %>
+
+        <!-- Fetch Image All User -->
+        <script>
+            async function fetchImage() {
+                const response = await fetch("/api/fetchimage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                });
+                const result = await response.json();
+                if (result.count === 0) {
+                    document.getElementById("imageBodyParent").innerHTML = "Image Not Found!";
+                } else {
+                    result.data.forEach(element => {
+                        let html = `<div class="card">
+                                    <div class="card-body">
+                                        <div class="card-img">
+                                            <img src="${element.image}" alt="img support">
+                                        </div>
+                                        <div class="card-detail">
+                                            <span class="card-avater">
+                                                <img src="${element.image}" alt="">
+                                            </span>
+                                            <h3><i>${element.name}</i></h3>
+                                        </div>
+                                        <div class="card-icon">
+                                            <div class="icon-item icon-item-1">
+                                                <a href="">
+                                                    <ion-icon name="heart"></ion-icon>
+                                                </a>
+                                            </div>
+                                            <div class="icon-item icon-item-2">
+                                                <a href="${element.image}" download>
+                                                    <ion-icon name="cloud-download"></ion-icon>
+                                                </a>
+                                            </div>
+                                            <div class="icon-item icon-item-3" title="${element.image}" onclick="button(this)">
+                                                <button>
+                                                    <ion-icon name="link"></ion-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        document.getElementById("imageBodyParent").innerHTML += html;
+                    });
+                }
+            }
+            fetchImage();
+
+        </script>
+
+        <!-- Copy Clipboard in Image URL -->
+        <script>
+            async function button(e) {
+                let val = e.title;
+                let html = ""
+                html = `<image src="http://localhost:5050\\${val}">`
+                await navigator.clipboard.writeText(html);
+            }
+        </script>

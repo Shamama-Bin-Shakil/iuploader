@@ -1,0 +1,99 @@
+<!-- Include Header File -->
+<%- include("./partials/header.ejs") %>
+
+  <!-- Upload Center Image -->
+  <div class="container">
+    <div class="upload-container">
+      <div class="upload-heading">
+        <h2>Upload Your Image</h2>
+      </div>
+      <div class="preview-image-container">
+        <input type="file" id="inpFile" hidden />
+        <span class="upload-icon" id="uploadIcon">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+        </span>
+        <span id="custom-btn" class="custom-btn">Image Browse</span>
+        <small class="supportTypeImage" id="supportTypeImage">Supports: PNG, JPG, JPEG</small>
+        <div class="image-preview" id="imagePreview">
+          <img src="" alt="image Preview" class="image-preview__image" />
+          <span class="imageClose" id="imageClose">+</span>
+        </div>
+      </div>
+      <div class="upload-button">
+        <button type="button" class="style-btn" id="upload-start-btn">Upload Start</button>
+      </div>
+    </div>
+  </div>
+  <!-- Include Footer File -->
+  <%- include("./partials/footer.ejs") %>
+
+    <!-- Image Upload Script Start Here  -->
+    <script>
+      const custom_btn = document.getElementById("custom-btn");
+      custom_btn.addEventListener("click", () => {
+        document.getElementById("inpFile").click();
+      });
+
+      const inpFile = document.getElementById("inpFile");
+      const previewContainer = document.getElementById("imagePreview");
+      const previewImage = document.querySelector(".image-preview__image");
+      const uploadIcon = document.getElementById("uploadIcon");
+      const supportTypeImage = document.getElementById("supportTypeImage");
+      const imageClose = document.getElementById("imageClose");
+
+      inpFile.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
+          if (file) {
+            const reader = new FileReader();
+            previewImage.style.display = "flex";
+            custom_btn.style.display = "none";
+            uploadIcon.style.display = "none";
+            supportTypeImage.style.display = "none";
+
+            reader.addEventListener("load", function () {
+              previewImage.setAttribute("src", this.result);
+            });
+
+            reader.readAsDataURL(file);
+          }
+        } else {
+          alertError("Support only JPG, PNG ,JPEG");
+
+        }
+      });
+
+      imageClose.addEventListener("click", () => {
+        previewImage.removeAttribute("src", "");
+        previewImage.style.display = "none";
+        custom_btn.style.display = "flex";
+        uploadIcon.style.display = "flex";
+        supportTypeImage.style.display = "flex";
+      });
+
+  const upload_start_btn = document.getElementById("upload-start-btn");
+  upload_start_btn.addEventListener("click", uploadStart);
+
+  async function uploadStart(e) {
+    const formData = new FormData();
+
+    for (const file of inpFile.files) {
+      formData.append("myFiles", file);
+    }
+
+    const response = await fetch("/api/uploadimage", {
+      method: "POST",
+      headers: { "auth-token": sessionStorage.getItem("auth-token") },
+      body: formData,
+    });
+    const result = await response.json();
+    if (result) {
+      alertSuccess("Image Upload Successfully");
+      previewImage.removeAttribute("src", "");
+      previewImage.style.display = "none";
+      custom_btn.style.display = "flex";
+      uploadIcon.style.display = "flex";
+      supportTypeImage.style.display = "flex";
+    }
+  }
+    </script>

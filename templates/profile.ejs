@@ -1,0 +1,180 @@
+<!-- Include Header File -->
+<%- include("./partials/header.ejs") %>
+
+    <!--Student Add Modal Here -->
+    <div class="modal" id="modal-student">
+        <div class="modal-setting">
+            <div class="modal-header">
+                <h5>Password Management</h5>
+                <div class="modal-close" id="modal-close">+</div>
+            </div>
+            <section>
+                <form id="update-password">
+                    <div class="form-control">
+                        <input type="text" name="old_password" required />
+                        <label for="" class="label-name">
+                            <span class="content-name">Old Password</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <input type="text" name="new_password" required />
+                        <label for="" class="label-name">
+                            <span class="content-name">New Password</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <input type="text" name="confirm_password" required />
+                        <label for="confirm_password" class="label-name">
+                            <span class="content-name">Confirm Password</span>
+                        </label>
+                    </div>
+                    <div class="modal-button">
+                        <button type="submit" class="profile-password-btn" id="register">Update
+                            Password</button>
+                    </div>
+
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="container">
+        <div class="profile-detail">
+            <input type="file" name="" id="profileImageReal" hidden>
+            <div class="profile-image" id="profileImageCustom">
+                <img src="" alt="profile image" id="per-image">
+                <div class="profile-camera">
+                    <ion-icon name="camera-outline"></ion-icon>
+                </div>
+            </div>
+            <h3 id="per-name"></h3>
+            <span id="per-email"></span>
+
+            <div class="profile-icon-social">
+                <div class="icon-item fb-color">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                </div>
+                <div class="icon-item instagram-color">
+                    <ion-icon name="logo-instagram"></ion-icon>
+                </div>
+                <div class="icon-item twitter-color">
+                    <ion-icon name="logo-twitter"></ion-icon>
+                </div>
+            </div>
+
+            <div class="profile-detail-button">
+                <button class="style-btn" id="profileUpdateImage">Update Image</button>
+            </div>
+            <a class="passwordUpdateLink" id="profile-update-btn">Profile Password Update?</a>
+
+        </div>
+    </div>
+
+<!-- Include Footer File -->
+<%- include("./partials/footer.ejs") %>
+
+        <!-- Profile Image Button Real / Custom -->
+        <script>
+            const profileImageReal = document.getElementById("profileImageReal");
+            const profileImageCustom = document.getElementById("profileImageCustom");
+            profileImageCustom.addEventListener("click", () => profileImageReal.click());
+        </script>
+
+        <!-- Profile Image Upload -->
+        <script>
+
+            const profileUpdateImage = document.getElementById("profileUpdateImage");
+            profileUpdateImage.addEventListener("click", profileImageStart);
+
+            async function profileImageStart(e) {
+                const formData = new FormData();
+
+                for (const file of profileImageReal.files) {
+                    formData.append("myFiles", file);
+                }
+                if(profileImageReal.files[0].type == "image/jpeg" || profileImageReal.files[0].type == "image/jpg" || profileImageReal.files[0].type == "image/png") {
+                    const response = await fetch("/api/profileimageupload", {
+                        method: "POST",
+                        headers: { "auth-token": sessionStorage.getItem("auth-token") },
+                        body: formData,
+                    });
+                    const result = await response.json();
+                    if (result) {
+                        alertSuccess("Profile Image Updated");
+                        userDetail();
+                    }
+                }
+            }
+        </script>
+
+        <!-- Password Modal -->
+        <script>
+            const profile_update_btn = document.getElementById("profile-update-btn");
+            const modal_student = document.getElementById("modal-student");
+            const modal_close = document.getElementById("modal-close");
+
+            modal(profile_update_btn, modal_student, modal_close);
+        </script>
+
+        <!-- Password Update -->
+        <script>
+            const update_password = document.getElementById("update-password");
+            update_password.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const formData = new FormData(form);
+                const plainPasswordUpdate = Object.fromEntries(formData.entries());
+                if (plainPasswordUpdate.old_password.value === "") {
+                    alertError("Old Password field is required");
+                } else if (plainPasswordUpdate.new_password.value === "") {
+                    alertError("New Password field is required");
+                } else if (plainPasswordUpdate.new_password.length <= 6) {
+                    alertError("New Password must be greater than 7 character");
+                } else if (plainPasswordUpdate.confirm_password.value !== plainPasswordUpdate.new_password.value) {
+                    alertError("New Password and Confirm Password do not match");
+                } else {
+                    const response = await fetch("/api/passwordupdate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "auth-token": sessionStorage.getItem("auth-token") },
+                        body: JSON.stringify(plainPasswordUpdate)
+                    });
+                    const result = await response.json();
+                    if (result.error == "Invalid Credential") {
+                        alertError("Invalid Credential");
+                    } else if (result.error == "password do not match") {
+                        alertError("Old Password do not match ");
+                    } else if (result.success == "password updated successfully") {
+                        alertSuccess("Password Updated Successfully");
+                    }
+                }
+            })
+        </script>
+
+        <!-- Get Profile Detail -->
+        <script>
+            async function userDetail() {
+                const response = await fetch("/api/userdetail", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "auth-token": sessionStorage.getItem("auth-token")
+                    },
+                });
+                const result = await response.json();
+                if (result) {
+                    const per_image = document.getElementById("per-image");
+                    if (result[0].image) {
+                        per_image.setAttribute("src", result[0].image)
+                    } else {
+                        per_image.setAttribute("src", "uploads/img.jpg")
+                    }
+                    document.getElementById("per-name").innerHTML = result[0].name;
+                    document.getElementById("per-email").innerHTML = result[0].email;
+                }
+            }
+            userDetail();
+
+        </script>

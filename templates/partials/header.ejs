@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/favicon1.png" type="image/x-icon">
+    <title>
+        <% if (!user) { %>
+            iUploader.com
+        <% } %>
+        <% if (user) { %>
+            iUploader.com -- <%= user %>
+        <% } %>
+    </title>
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Alert Error -->
+    <div class="alert-box alert-error" id="alert-error">
+        <div class="alert-close icon-error">
+            <ion-icon name="close"></ion-icon>
+        </div>
+        <div class="alert-text">
+            <strong class="alert-error-status">Error:</strong><p id="error">Name is Invaid</p>
+        </div>
+    </div>
+
+    <!-- Alert Success -->
+    <div class="alert-box alert-success" id="alert-success">
+        <div class="alert-close icon-success">
+            <ion-icon name="checkmark"></ion-icon>
+        </div>
+        <div class="alert-text">
+            <strong class="alert-success-status">Success:</strong><p id="success">Register Successfully</p>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="nav">
+        <div class="brand">
+            <a href="/" class="logo_cs">
+                <img src="img/favicon1.png" alt="img">
+            </a>
+            <div class="menu">
+                <div>
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <% if (user) { %>
+                        <li>
+                            <a href="/upload">Upload</a>
+                        </li>
+                        <li>
+                            <a href="/profile">Profile</a>
+                        </li>
+                        <% } %>
+
+                </div>
+            </div>
+            <div class="burger">
+                <div class="line line-1"></div>
+                <div class="line line-2"></div>
+                <div class="line line-3"></div>
+            </div>
+        </div>
+        <div class="contact">
+            <% if (!user) { %>
+
+                <li class="contact-btn secondary-btn">
+                    <a href="login">Login</a>
+                </li>
+                <% } %>
+
+                    <% if (user) { %>
+                        <p id="profile-button">
+                            <ion-icon name="person-circle-outline"></ion-icon>
+                        </p>
+
+                        <p id="profile-button">
+                            <ion-icon name="cloud-upload-outline"></ion-icon>
+                        </p>
+
+                        <% } %>
+        </div>
+
+        <% if (user) { %>
+            <div class="profile-content" id="profile-content">
+                <h4>
+                    <%= user %>
+                </h4>
+                <ul>
+                    <li><a href="/profile">
+                            <ion-icon name="person-circle-outline"></ion-icon><a href="/profile"
+                                class="pro-text">Profile</a>
+                        </a></li>
+                    <li><a href="/upload">
+                            <ion-icon name="cloud-upload-outline"></ion-icon><a href="/upload" class="pro-text">Upload
+                                Center</a>
+                        </a></li>
+                    <li><a href="/userimage">
+                            <ion-icon name="images-outline"></ion-icon><a href="/userimage" class="pro-text">My
+                                Image</a>
+                        </a></li>
+                    <li><a href="#">
+                            <ion-icon name="information-circle-outline"></ion-icon><a href="#"
+                                class="pro-text">About</a>
+                        </a></li>
+                    <li><a href="/api/logout" id="logout-account">
+                            <ion-icon name="log-out-outline"></ion-icon><a href="/api/logout"
+                                class="pro-text">Logout</a>
+                        </a></li>
+                </ul>
+            </div>
+            <% } %>
+
+
+    </nav>
+
+    <!-- logout Account -->
+    <script>
+        try {
+            const logout_account = document.getElementById("logout-account");
+            logout_account.addEventListener('click', logout);
+            async function logout() {
+                const logout = await sessionStorage.removeItem("auth-token");
+                location.href = "/";
+            }
+        } catch (error) {
+
+        }
+    </script>
